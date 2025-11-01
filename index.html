@@ -147,7 +147,12 @@
     }
 
     // QR scanner
-    const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 });
+    let boxSize = Math.min(window.innerWidth * 0.8, 400); // 80% of screen, max 400px
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+      fps: 10, 
+      qrbox: { width: boxSize, height: boxSize }, 
+      aspectRatio: 1.0 
+    });
     html5QrcodeScanner.render(onScanSuccess);
 
     fetchScans(); // load previous scans
