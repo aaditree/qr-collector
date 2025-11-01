@@ -1,17 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>QR URL Collector for GHC 2025</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR URL Collector</title>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
-    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
-    th { background-color: #f0f0f0; }
+    /* Reset and base */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 1.8em;
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    #reader {
+      width: 90vw;
+      max-width: 400px;
+      margin: 20px auto;
+      border: 2px solid #3498db;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #27ae60;
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 30px;
+      font-size: 1.5em;
+      color: #34495e;
+    }
+
+    table {
+      width: 90vw;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      th, td {
+        padding: 8px;
+        font-size: 0.9em;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>QR URL Collector</h1>
 
-  <div id="reader" style="width:300px;"></div>
+  <h1>QR URL Collector</h1>
+  <div id="reader"></div>
   <p id="status"></p>
 
   <h2>Previously Scanned</h2>
@@ -24,7 +108,7 @@
   </table>
 
   <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzKuRJeTVRWQYFtapF6YWmyWRivHS8mWkSItboWuZXEZtAJSAi6jaGhZyNwao6Zrb0VBA/exec"; // replace with your Web App URL
+    const webAppUrl = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL"; // replace with your Apps Script URL
 
     function sendToSheet(qrText) {
       fetch(webAppUrl, {
@@ -37,7 +121,10 @@
         document.getElementById("status").innerText = "Saved: " + qrText;
         fetchScans();
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        document.getElementById("status").innerText = "Error saving QR";
+        console.error(err);
+      });
     }
 
     function fetchScans() {
@@ -45,7 +132,6 @@
       .then(res => res.json())
       .then(data => {
         const table = document.getElementById("scanTable");
-        // Clear previous rows except header
         table.innerHTML = "<tr><th>Timestamp</th><th>QR Text</th><th>URL</th></tr>";
         data.forEach(item => {
           let row = table.insertRow();
@@ -60,10 +146,11 @@
       sendToSheet(decodedText);
     }
 
-    var html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+    // QR scanner
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 });
     html5QrcodeScanner.render(onScanSuccess);
 
-    fetchScans(); // Load previous scans on page load
+    fetchScans(); // load previous scans
   </script>
 </body>
 </html>
